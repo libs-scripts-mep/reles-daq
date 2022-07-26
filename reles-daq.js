@@ -1,19 +1,22 @@
 ﻿class Reles {
 
     /**
+     * Aceita string's e array's.
      * 
-     * @param {array} relesParaAcionamento 
-     * @param {string} relesParaAcionamento 
+     * Formato esperado [Array's] : [1, 2, 5] 
+     * 
+     * formato esperado [String's] : "RL1, RL2, RL5"
+     * @param {*} relesParaAcionamento 
      * @param {function} callback
      * @param {number} timeOut
      */
-    static LigaReles(relesParaAcionamento = [], callback = () => { }, timeOut = 100) {
+    static LigaReles(relesParaAcionamento, callback = () => { }, timeOut = 100) {
 
         if (typeof (relesParaAcionamento) === "string") {
 
             let reles = relesParaAcionamento.split(",")
-            let relesParaAcionar = new Array()
             let relesParaDesacionar = new Array()
+            let relesParaAcionar = new Array()
 
             relesParaAcionar = []
             relesParaDesacionar = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
@@ -67,11 +70,8 @@
              * Seleciona reles para desacionamento
              */
             relesDaq.forEach(releDaq => {
-
                 if (!relesParaAcionamento.includes(releDaq)) {
-
                     relesParaDesacionamento.push(releDaq)
-
                 }
             })
 
@@ -79,18 +79,14 @@
              * Desaciona reles selecionados
              */
             relesParaDesacionamento.forEach(rele => {
-
                 pvi.daq.desligaRele(rele)
-
             })
 
             /**
              * Aciona reles passados inicialmente
              */
             relesParaAcionamento.forEach(rele => {
-
                 pvi.daq.ligaRele(rele)
-
             })
 
             setTimeout(() => {
@@ -100,26 +96,31 @@
 
     }
 
+    /**
+     * @param {number} relay 
+     * @param {[number]} buffer 
+     */
     static AddRelayToBuffer(relay, buffer) {
-
         buffer.push(relay)
-
     }
 
+    /**
+     * @param {number} relay 
+     * @param {[number]} buffer 
+     */
     static RemoveRelayFromBuffer(relay, buffer) {
-
         buffer.forEach((bufferRelay, index) => {
             if (bufferRelay == relay) {
                 buffer.splice(index, 1)
             }
         })
-
     }
 
+    /**
+     * @param {[number]} buffer 
+     */
     static ClearBufferRelay(buffer) {
-
         buffer.splice(0, buffer.length)
-
     }
 }
 

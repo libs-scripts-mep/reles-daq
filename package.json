@@ -1,5 +1,5 @@
 {
-  "name": "reles-daq",
+  "name": "@libs-scripts-mep/reles-daq",
   "version": "1.0.0",
   "description": "Biblioteca que auxilia no acionamento de relés do DAQ",
   "main": "reles-daq.js",
@@ -10,10 +10,14 @@
     "type": "git",
     "url": "git+https://github.com/libs-scripts-mep/reles-daq.git"
   },
-  "author": "",
+  "author": "Lucas Kroth",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/libs-scripts-mep/reles-daq/issues"
   },
-  "homepage": "https://github.com/libs-scripts-mep/reles-daq#readme"
+  "homepage": "https://github.com/libs-scripts-mep/reles-daq#readme",
+  "keywords": [
+    "rele",
+    "daq"
+  ]
 }
