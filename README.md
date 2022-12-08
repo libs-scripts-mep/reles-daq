@@ -1,7 +1,7 @@
 # Gerenciamento de Relés do DAQ
 ## Instalando
 
-Abra o terminal, e na pasta do script, rode:
+Abra o terminal, e na pasta do script, execute:
 
 ```
 npm i @libs-scripts-mep/reles-daq
@@ -9,7 +9,7 @@ npm i @libs-scripts-mep/reles-daq
 
 ## Desinstalando
 
-Abra o terminal, e na pasta do script, rode:
+Abra o terminal, e na pasta do script, execute:
 
 ```
 npm uninstall @libs-scripts-mep/reles-daq
@@ -63,7 +63,7 @@ class Reles {
 
 ## Exemplo de Utilização de Buffers
 
->⚠️ Exclusivo para parâmetros do tipo array
+>⚠️ Exclusivo para parâmetros do tipo ***object***
 
 <br>
 

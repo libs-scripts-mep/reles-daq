@@ -101,7 +101,9 @@
      * @param {[number]} buffer 
      */
     static AddRelayToBuffer(relay, buffer) {
-        buffer.push(relay)
+        if (!buffer.includes(relay)) {
+            buffer.push(relay)
+        }
     }
 
     /**
@@ -123,6 +125,3 @@
         buffer.splice(0, buffer.length)
     }
 }
-
-
-
