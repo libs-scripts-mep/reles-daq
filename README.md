@@ -19,103 +19,54 @@ npm uninstall @libs-scripts-mep/reles-daq
 
 Biblioteca genérica para acionamento dos relés do DAQ.
 
-
-| Versão DAQ | Suporta? |
-| ---------- | -------- |
-| 1.9        | ✔️        |
-| 2.0        | ✔️        |
-
-Método principal:
-
-``` js
-//Teste.js
-
-class Reles {
-
-    /**
-     * Aceita string's e array's.
-     * 
-     * Formato esperado [Array's] : [1, 2, 5] 
-     * 
-     * formato esperado [String's] : "RL1, RL2, RL5"
-     * 
-     * @param {*} relesParaAcionamento 
-     * @param {function} callback
-     * @param {number} timeOut
-     */
-    static LigaReles(relesParaAcionamento, callback, timeOut) {
-
-        if (typeof (relesParaAcionamento) === "string") {
-            trata string...
-            aciona reles...
-            aguarda timeout...
-            chama callback.
-
-        } else if (typeof (relesParaAcionamento) === "object") {
-            trata string...
-            aciona reles...
-            aguarda timeout...
-            chama callback.
-        }
-    }
-}
-```
-
 ## Exemplo de Utilização de Buffers
 
->⚠️ Exclusivo para parâmetros do tipo ***object***
-
-<br>
-
-``` js
-//Main.js
-
-class Main {
+```js
+class TestScript {
     constructor() {
-        //Pode-se utilizar multiplos buffers
+        this.Out = {
+            Power: 6,
+            InTestSensor: 7,
+            ReferenceSensor: 5
+        }
         this.BufferReles = []
+
+        this.Run()
     }
-}    
-```
 
-Métodos para manipulação do(s) buffer(s):
+    async Run() {
+        await this.PowerOn(3000)
+        await this.SelectRefSensor(1000)
+        await this.SelectInTestSensor(1000)
+        await this.PowerOff(0)
+    }
 
-``` js
-//Teste.js
+    async PowerOn(afterDelay) {
+        DAQRelay.AddRelay(this.Out.Power, this.BufferReles)
+        return await DAQRelay.TurnOn(this.BufferReles, afterDelay)
+    }
 
-class Reles {
+    async PowerOff(afterDelay) {
+        //limpa o buffer
+        DAQRelay.ClearBuffer(this.BufferReles)
+        //realiza o desacionamento de todos os relés.
+        return await DAQRelay.TurnOn(this.BufferReles, afterDelay)
+    }
 
-    /**
-     * @param {number} relay 
-     * @param {array} buffer 
-     */
-    static AddRelayToBuffer(relay, buffer)
+    async SelectRefSensor(afterDelay) {
+        //manipula o buffer adicionando um relé e removendo outro.
+        DAQRelay.RemoveRelay(this.Out.InTestSensor, this.BufferReles)
+        DAQRelay.AddRelay(this.Out.ReferenceSensor, this.BufferReles)
+        //realiza o acionamento dos reles contidos no buffer e o desacionamento dos relés não contidos no buffer.
+        return await DAQRelay.TurnOn(this.BufferReles, afterDelay)
+    }
 
-    /**
-     * @param {number} relay 
-     * @param {array} buffer 
-     */
-    static RemoveRelayFromBuffer(relay, buffer)
-
-    /**
-     * @param {array} buffer 
-     */
-    static ClearBufferRelay(buffer)
+    async SelectInTestSensor(afterDelay) {
+        DAQRelay.AddRelay(this.Out.InTestSensor, this.BufferReles)
+        DAQRelay.RemoveRelay(this.Out.ReferenceSensor, this.BufferReles)
+        return await DAQRelay.TurnOn(this.BufferReles, afterDelay)
+    }
 }
-```
 
-Exemplo de manipulação e acionamento:
 
-``` js
-//Main.js
-
-Reles.ClearBufferRelay(this.BufferReles)
-Reles.AddRelayToBuffer(Setup.Reles.HabilitaSlot1, this.BufferReles)
-Reles.AddRelayToBuffer(Setup.Reles.HabilitaPistao, this.BufferReles)
-Reles.AddRelayToBuffer(Setup.Reles.HabilitaAlimentacao, this.BufferReles)
-Reles.AddRelayToBuffer(Setup.Reles.HabilitaComunicacao, this.BufferReles)
-Reles.LigaReles(this.BufferReles, () => {
-    segue o teste..
-})
-  
 ```
