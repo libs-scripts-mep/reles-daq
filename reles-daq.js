@@ -17,7 +17,7 @@
              * Monta lista de reles do DAQ
              */
             for (let relay = 1; relay <= 18; relay++) {
-                daqRelays.push(index)
+                daqRelays.push(relay)
             }
 
             /**
@@ -32,15 +32,15 @@
             /**
              * Desaciona reles selecionados
              */
-            toTurnOffRelays.forEach(rele => {
-                pvi.daq.desligaRele(rele)
+            toTurnOffRelays.forEach(relay => {
+                pvi.daq.desligaRele(relay)
             })
 
             /**
              * Aciona reles passados inicialmente
              */
-            toTurnOnRelays.forEach(rele => {
-                pvi.daq.ligaRele(rele)
+            toTurnOnRelays.forEach(relay => {
+                pvi.daq.ligaRele(relay)
             })
 
             console.log("Relés Acionados", toTurnOnRelays)

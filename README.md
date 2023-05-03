@@ -1,4 +1,7 @@
 # Gerenciamento de Relés do DAQ
+
+Biblioteca genérica para acionamento dos relés do DAQ.
+
 ## Instalando
 
 Abra o terminal, e na pasta do script, execute:
@@ -14,10 +17,6 @@ Abra o terminal, e na pasta do script, execute:
 ```
 npm uninstall @libs-scripts-mep/reles-daq
 ```
-
-## Resumo da Classe
-
-Biblioteca genérica para acionamento dos relés do DAQ.
 
 ## Exemplo de Utilização de Buffers
 
@@ -67,6 +66,4 @@ class TestScript {
         return await DAQRelay.TurnOn(this.BufferReles, afterDelay)
     }
 }
-
-
 ```
