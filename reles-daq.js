@@ -1,4 +1,6 @@
-﻿class DAQRelay {
+﻿import Log from "../../@libs-scripts-mep/script-loader/utils-script.js"
+
+export class DAQRelay {
 
     static State = []
 
@@ -36,13 +38,13 @@
         //Desaciona relés não inclusos no buffer
         for (const relay of daqRelays) {
             if (!toTurnOnRelays.includes(relay)) {
-                DAQ.runInstruction("desliga_rele", ["RL" + relay], () => { }, pvi.daq.getQueryID())
+                DAQ.desligaRele(relay)
             }
         }
 
         //Aciona reles inclusos no buffer
         for (const relay of toTurnOnRelays) {
-            DAQ.runInstruction("liga_rele", ["RL" + relay], () => { }, pvi.daq.getQueryID())
+            DAQ.ligaRele(relay)
         }
 
         console.warn("Relés Acionados", toTurnOnRelays)
@@ -135,9 +137,11 @@
             }, timeout)
         })
     }
+
+    static { window.DAQRelay = DAQRelay }
 }
 
-class Power {
+export class Power {
 
     /**
      * @param {Number} voltage 
@@ -165,19 +169,19 @@ class Power {
         switch (voltage) {
             case 12:
                 Log.console(`12VDC Alimentação Geral [Delay ${delay}ms]`, Log.Colors.Yellow.Gold)
-                pvi.daq.alimenta12()
+                DAQ.alimenta12()
                 break
             case 24:
                 Log.console(`24VDC Alimentação Geral [Delay ${delay}ms]`, Log.Colors.Yellow.Gold)
-                pvi.daq.alimenta24()
+                DAQ.alimenta24()
                 break
             case 110:
                 Log.console(`110VAC Alimentação Geral [Delay ${delay}ms]`, Log.Colors.Yellow.Gold)
-                pvi.daq.alimenta110()
+                DAQ.alimenta110()
                 break
             case 220:
                 Log.console(`220VAC Alimentação Geral [Delay ${delay}ms]`, Log.Colors.Yellow.Gold)
-                pvi.daq.alimenta220()
+                DAQ.alimenta220()
                 break
             default:
                 alert("Tensão informada inválida")
@@ -204,7 +208,7 @@ class Power {
      */
     static async Off(delay = 0) {
         Log.console(`Desenergizando Alimentação Geral [Delay ${delay}ms]`, Log.Colors.Yellow.Gold)
-        pvi.daq.desligaAlimentacao()
+        DAQ.desligaAlimentacao()
         if (delay) { await this.Delay(delay) }
         return
     }
@@ -227,7 +231,7 @@ class Power {
      */
     static async Aux(state, delay = 0) {
         Log.console(`${state ? "Energizando" : "Desenergizando"} Alimentação Auxiliar [Delay ${delay}ms]`, Log.Colors.Yellow.Gold)
-        state ? pvi.daq.ligaAux220() : pvi.daq.desligaAux220()
+        state ? DAQ.ligaAux220() : DAQ.desligaAux220()
         if (delay) { await this.Delay(delay) }
         return
     }
