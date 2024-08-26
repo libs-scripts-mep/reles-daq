@@ -54,60 +54,50 @@ export class DAQRelay {
     }
 
     /**
-     * @param {Number} relay 
-     * @param {Array} buffer
-     * 
-     * # Formato Esperado
-     * 
-     * ```js
-     * relay = 4
-     * buffer = [1, 2, 3]
-     * ```
-     * 
-     * # Exemplos
-     * 
-     * Adicionando relé ao buffer interno `DAQRelay.State`:
-     * ```js
-     * DAQRelay.AddRelay(4)
-     * ```
-     * 
-     * Adicionando relé à outro buffer:
-     * ```js
-     * DAQRelay.AddRelay(buffer, 1000)
-     * ```
-     */
+    * @param {number | number[]} relay 
+    * @param {number[]} buffer
+    * @example
+    * let relay = 4
+    * let buffer = [1, 2, 3]
+    * DAQRelay.AddRelay(relay)
+    * await DAQRelay.TurnOn(undefined, 500)
+    */
     static AddRelay(relay, buffer = DAQRelay.State) {
-        if (!buffer.includes(relay)) {
-            buffer.push(relay)
+        if (typeof relay == "number") {
+            if (!buffer.includes(relay)) {
+                buffer.push(relay)
+            }
+        } else if (typeof relay == "object") {
+            for (const rl of relay) {
+                if (!buffer.includes(rl)) {
+                    buffer.push(rl)
+                }
+            }
         }
     }
 
     /**
-     * @param {Number} relay 
-     * @param {Array} buffer
-     * # Formato Esperado
-     * 
-     * ```js
-     * relay = 1
-     * buffer = [1, 2, 3]
-     * ```
-     * 
-     * # Exemplos
-     * 
-     * Removendo relé ao buffer interno `DAQRelay.State`:
-     * ```js
-     * DAQRelay.RemoveRelay(1)
-     * ```
-     * 
-     * Removendo relé à outro buffer:
-     * ```js
-     * DAQRelay.RemoveRelay(buffer, 1000)
-     * ```
-     */
+      * @param {number | number[]} relay 
+      * @param {number[]} buffer
+      * @example
+      * let relay = 4
+      * let buffer = [1, 2, 3]
+      * DAQRelay.RemoveRelay(relay)
+      * await DAQRelay.TurnOn(undefined, 500)
+      */
     static RemoveRelay(relay, buffer = DAQRelay.State) {
         buffer.forEach((bufferRelay, index) => {
-            if (bufferRelay == relay) {
-                buffer.splice(index, 1)
+
+            if (typeof relay == "number") {
+                if (bufferRelay == relay) {
+                    buffer.splice(index, 1)
+                }
+            } else if (typeof relay == "object") {
+                for (const rl of relay) {
+                    if (bufferRelay == rl) {
+                        buffer.splice(index, relay.length)
+                    }
+                }
             }
         })
     }
