@@ -133,6 +133,8 @@ export class DAQRelay {
 
 export class Power {
 
+    static enableCyclePower = false
+
     /**
      * @param {Number} voltage 
      * @param {Number} delay 
@@ -225,6 +227,26 @@ export class Power {
         if (delay) { await this.Delay(delay) }
         return
     }
+
+ /**
+     * Cicla a alimentação do produto entre 220V e 110V
+     * 
+     * ⚠️ UTILIZAR APENAS COM PEÇAS COM ALIMENTAÇÃO DE 85VAC À 250VAC ⚠️
+     * @param {Number} cycletime - Tempo de duração do ciclo em milisegundos (padrão 5000ms)
+     * @example
+     * Power.enableCyclePower = true
+     * await Power.cyclePowerSupply(5000)
+     */
+    static async cyclePowerSupply(cycletime = 5000) {
+        while (true) {
+            await this.Delay(100)
+            if (this.enableCyclePower) {
+                await this.On(220, cycletime)
+                await this.On(110, cycletime)
+            }
+        }
+    }
+
 
     static async Delay(timeout = 1000) {
         return new Promise((resolve) => {
