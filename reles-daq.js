@@ -2,49 +2,35 @@
 
 export class DAQRelay {
 
-    static State = []
+    static state = []
 
     /** 
-     * @param {array} toTurnOnRelays
+     * @param {Array<number>} toTurnOnRelays
      * @param {number} delay
      * 
-     * # Formato Esperado
-     * 
-     * ```js
-     * toTurnOnRelays = [1, 2, 3]
-     * delay = 1000
-     * ```
-     * 
-     * # Exemplos
-     * 
-     * Utilizando buffer interno `DAQRelay.State` e sem timeout:
-     * ```js
+     * @example
+     * //Utilizando buffer interno `DAQRelay.state` e sem timeout:
      * DAQRelay.TurnOn()
-     * ```
      * 
-     * Utilizando buffer interno com timeout:
-     * ```js
+     * //Utilizando buffer interno com timeout:
      * await DAQRelay.TurnOn(undefined, 1000)
-     * ```
      * 
-     * Utilizando outro buffer com timeout:
-     * ```js
+     * //Utilizando outro buffer com timeout:
      * await DAQRelay.TurnOn(myBuffer, 1000)
-     * ```
      */
-    static async TurnOn(toTurnOnRelays = DAQRelay.State, delay = 0) {
+    static async TurnOn(toTurnOnRelays = DAQRelay.state, delay = 0) {
         let daqRelays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 
-        //Desaciona relés não inclusos no buffer
         for (const relay of daqRelays) {
-            if (!toTurnOnRelays.includes(relay)) {
+            if (!toTurnOnRelays.includes(relay) && DAQ.out[`rl${relay}`].value) {
                 DAQ.desligaRele(relay)
             }
         }
 
-        //Aciona reles inclusos no buffer
         for (const relay of toTurnOnRelays) {
-            DAQ.ligaRele(relay)
+            if (!DAQ.out[`rl${relay}`].value) {
+                DAQ.ligaRele(relay)
+            }
         }
 
         console.warn("Relés Acionados", toTurnOnRelays)
@@ -54,15 +40,18 @@ export class DAQRelay {
     }
 
     /**
-    * @param {number | number[]} relay 
-    * @param {number[]} buffer
+    * @param {number | Array<number>} relay 
+    * @param {Array<number>} buffer
     * @example
-    * let relay = 4
-    * let buffer = [1, 2, 3]
+    * //Adicionando relés à um buffer externo
+    * const relay = 4
+    * const buffer = [1, 2, 3]
     * DAQRelay.AddRelay(relay)
+    * 
+    * //Adicionando relés ao buffer interno `DAQRelay.state`
     * await DAQRelay.TurnOn(undefined, 500)
     */
-    static AddRelay(relay, buffer = DAQRelay.State) {
+    static AddRelay(relay, buffer = DAQRelay.state) {
         if (typeof relay == "number") {
             if (!buffer.includes(relay)) {
                 buffer.push(relay)
@@ -77,46 +66,48 @@ export class DAQRelay {
     }
 
     /**
-      * @param {number | number[]} relay 
-      * @param {number[]} buffer
+      * @param {number | Array<number>} relay 
+      * @param {Array<number>} buffer
       * @example
-      * let relay = 4
-      * let buffer = [1, 2, 3]
+      * //Removendo relés de um buffer externo
+      * const relay = 4
+      * const buffer = [1, 2, 3]
       * DAQRelay.RemoveRelay(relay)
+      * 
+      * //Removendo relés do buffer interno `DAQRelay.state`
       * await DAQRelay.TurnOn(undefined, 500)
       */
-    static RemoveRelay(relay, buffer = DAQRelay.State) {
-        buffer.forEach((bufferRelay, index) => {
+    static RemoveRelay(relay, buffer = DAQRelay.state) {
+        for (const i in buffer) {
+            const bufferRelay = buffer[i]
 
-            if (typeof relay == "number") {
-                if (bufferRelay == relay) {
-                    buffer.splice(index, 1)
+            if (typeof relay === "number") {
+                if (bufferRelay === relay) {
+                    buffer.splice(i, 1)
+                    break
                 }
-            } else if (typeof relay == "object") {
+            } else if (typeof relay === "object") {
                 for (const rl of relay) {
-                    if (bufferRelay == rl) {
-                        buffer.splice(index, relay.length)
+                    if (bufferRelay === rl) {
+                        buffer.splice(i, relay.length)
+                        break
                     }
                 }
             }
-        })
+        }
     }
 
     /**
-     * @param {Array} buffer
-     * # Formato Esperado
+     * @param {Array<number>} buffer
+     * @example 
+     * //Limpando buffer externo `myBuffer`
+     * const myBuffer = [1, 2, 3]
+     * DAQRelay.ClearBuffer(myBuffer) //myBuffer = []
      * 
-     * ```js
-     * buffer = [1, 2, 3]
-     * ```
-     * 
-     * # Exemplo
-     * 
-     * ```js
-     * DAQRelay.ClearBuffer(myBuffer)
-     * ```
+     * //Limpando buffer interno `DAQRelay.state`
+     * await DAQRelay.ClearBuffer()
      */
-    static ClearBuffer(buffer = DAQRelay.State) {
+    static ClearBuffer(buffer = DAQRelay.state) {
         buffer.splice(0, buffer.length)
     }
 
@@ -228,15 +219,15 @@ export class Power {
         return
     }
 
- /**
-     * Cicla a alimentação do produto entre 220V e 110V
-     * 
-     * ⚠️ UTILIZAR APENAS COM PEÇAS COM ALIMENTAÇÃO DE 85VAC À 250VAC ⚠️
-     * @param {Number} cycletime - Tempo de duração do ciclo em milisegundos (padrão 5000ms)
-     * @example
-     * Power.enableCyclePower = true
-     * await Power.cyclePowerSupply(5000)
-     */
+    /**
+        * Cicla a alimentação do produto entre 220V e 110V
+        * 
+        * ⚠️ UTILIZAR APENAS COM PEÇAS COM ALIMENTAÇÃO DE 85VAC À 250VAC ⚠️
+        * @param {Number} cycletime - Tempo de duração do ciclo em milisegundos (padrão 5000ms)
+        * @example
+        * Power.enableCyclePower = true
+        * await Power.cyclePowerSupply(5000)
+        */
     static async cyclePowerSupply(cycletime = 5000) {
         while (true) {
             await this.Delay(100)
@@ -246,7 +237,6 @@ export class Power {
             }
         }
     }
-
 
     static async Delay(timeout = 1000) {
         return new Promise((resolve) => {
