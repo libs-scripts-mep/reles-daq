@@ -1,6 +1,6 @@
 {
   "name": "@libs-scripts-mep/reles-daq",
-  "version": "3.2.1",
+  "version": "4.0.0",
   "description": "Biblioteca que auxilia no acionamento de relés do DAQ",
   "main": "reles-daq.js",
   "scripts": {
