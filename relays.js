@@ -1,4 +1,4 @@
-import { DAQ } from "../../node_modules/@libs-scripts-mep/daq-fwlink/DAQ.js"
+import { DAQ } from "../daq-fwlink/DAQ.js"
 
 class ChangeObserver {
 
