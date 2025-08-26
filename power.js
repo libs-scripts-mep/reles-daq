@@ -24,15 +24,12 @@ export class Power {
     static voltageToOutValue = new Map([[0, 0], [12, 1], [24, 2], [110, 4], [220, 8]])
 
     static init() {
-        try {
-            DAQ.desligaAlimentacao()
-            DAQ.out.power.observers = []
-            DAQ.out.power.onChange = (newVal) => {
-                for (const observer of DAQ.out.power.observers) observer.change(newVal)
-            }
-        } catch (error) {
-            console.error(error)
-            console.error("DAQ not connected")
+        if (!DAQ) { console.error("DAQ not connected"); return }
+
+        DAQ.desligaAlimentacao()
+        DAQ.out.power.observers = []
+        DAQ.out.power.onChange = (newVal) => {
+            for (const observer of DAQ.out.power.observers) observer.change(newVal)
         }
     }
 
@@ -77,6 +74,7 @@ export class Power {
      * Power.addProhibitedVoltage(220)
      */
     static addProhibitedVoltage(voltage) {
+        if (!DAQ) { console.error("DAQ not connected"); return }
         if (!this.voltageToOutValue.has(voltage)) throw new Error(`Invalid voltage value → ${voltage}V`)
         DAQ.out.power.observers.push(new ProhibitedVoltageObserver(voltage))
     }

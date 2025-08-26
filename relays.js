@@ -77,18 +77,15 @@ export default class Relays {
 
     /** Desliga todos os relés, popula o set de relés desligados e inicializa os `onChange()` dos relés */
     static init() {
-        try {
-            DAQ.desligaReles(Array.from(this.validRelays))
-            this.disabledRelays = new Set(this.validRelays)
-            for (const relay of this.validRelays) {
-                DAQ.out[`rl${relay}`].observers = [new ChangeObserver(relay)] // Cria a propriedade `observers` para cada relé
-                DAQ.out[`rl${relay}`].onChange = newVal => {
-                    for (const observer of DAQ.out[`rl${relay}`].observers) observer.change(newVal) // Notifica os observers
-                }
+        if (!DAQ) { console.error("DAQ not connected"); return }
+
+        DAQ.desligaReles(Array.from(this.validRelays))
+        this.disabledRelays = new Set(this.validRelays)
+        for (const relay of this.validRelays) {
+            DAQ.out[`rl${relay}`].observers = [new ChangeObserver(relay)] // Cria a propriedade `observers` para cada relé
+            DAQ.out[`rl${relay}`].onChange = newVal => {
+                for (const observer of DAQ.out[`rl${relay}`].observers) observer.change(newVal) // Notifica os observers
             }
-        } catch (error) {
-            console.error(error)
-            console.error("DAQ not connected")
         }
     }
 
@@ -100,6 +97,7 @@ export default class Relays {
      * Relays.addProhibitedCombination([4, 5, 6])
      */
     static addProhibitedCombination(combination) {
+        if (!DAQ) { console.error("DAQ not connected"); return }
         const relaySet = this.createRelaySet(combination)
         for (const relay of relaySet) DAQ.out[`rl${relay}`].observers.push(new ProhibitedCombinationObserver(relaySet))
     }
@@ -114,6 +112,7 @@ export default class Relays {
      * Relays.addTimeout(2, 5000)
      */
     static addTimeout(relay, timeout, throws = false) {
+        if (!DAQ) { console.error("DAQ not connected"); return }
         DAQ.out[`rl${relay}`].observers.push(new TimeoutObserver(relay, timeout, throws))
     }
 
